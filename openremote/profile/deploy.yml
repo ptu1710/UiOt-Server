@@ -322,8 +322,9 @@ services:
 
   # Keycloak identity provider
   keycloak:
-    image: openremote/keycloak:${KEYCLOAK_VERSION:-latest}
-    restart: always
+#    image: openremote/keycloak:${KEYCLOAK_VERSION:-latest}
+    image: ixxc/keycloak:1.0
+    restart: no
     # Map any custom themes into the /deployment/keycloak/themes dir:
     #volumes:
       # Map custom themes
@@ -371,7 +372,7 @@ services:
   # PostgreSQL DBMS
   postgresql:
     image: openremote/postgresql:${POSTGRESQL_VERSION:-latest}
-    restart: always
+    restart: no
     # Shared memory should be increased for any reasonable DB size this should be increased further
     shm_size: 128mb
     # Docker volume for persistent storage of DB; can alternatively map to host
