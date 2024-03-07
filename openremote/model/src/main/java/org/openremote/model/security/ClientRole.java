@@ -48,37 +48,44 @@ public enum ClientRole {
     WRITE_INSIGHTS(Constants.WRITE_INSIGHTS_ROLE, "Write dashboard data"),
 
     READ("read", "Read all data", new ClientRole[]{
-        READ_ADMIN,
-        READ_LOGS,
-        READ_USERS,
-        READ_MAP,
-        READ_ASSETS,
-        READ_RULES,
-        READ_INSIGHTS
+            READ_ADMIN,
+            READ_LOGS,
+            READ_USERS,
+            READ_MAP,
+            READ_ASSETS,
+            READ_RULES,
+            READ_INSIGHTS
     }),
 
     WRITE("write", "Write all data", new ClientRole[]{
-        READ_ADMIN,
-        READ_LOGS,
-        READ_USERS,
-        READ_MAP,
-        READ_ASSETS,
-        READ_RULES,
-        READ_INSIGHTS,
-        WRITE_USER,
-        WRITE_ADMIN,
-        WRITE_LOGS,
-        WRITE_ASSETS,
-        WRITE_ATTRIBUTES,
-        WRITE_RULES,
-        WRITE_INSIGHTS
+            READ_ADMIN,
+            READ_LOGS,
+            READ_USERS,
+            READ_MAP,
+            READ_ASSETS,
+            READ_RULES,
+            READ_INSIGHTS,
+            WRITE_USER,
+            WRITE_ADMIN,
+            WRITE_LOGS,
+            WRITE_ASSETS,
+            WRITE_ATTRIBUTES,
+            WRITE_RULES,
+            WRITE_INSIGHTS
+    }),
+
+    DEFAULT_ROLES("default-roles", "Default roles for new users", new ClientRole[]{
+            READ_ASSETS,
+            READ_INSIGHTS,
+            READ_MAP,
+            READ_RULES,
     });
 
     // Only individual roles, not composites
     public static final Set<String> ALL_ROLES = Arrays.stream(values())
-        .filter(r -> r.composites == null)
-        .map(ClientRole::getValue)
-        .collect(Collectors.toSet());
+            .filter(r -> r.composites == null)
+            .map(ClientRole::getValue)
+            .collect(Collectors.toSet());
 
     final protected String value;
     final protected String description;

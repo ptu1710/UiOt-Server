@@ -706,7 +706,7 @@ public class ManagerKeycloakIdentityProvider extends KeycloakIdentityProvider im
                 .filter(RoleRepresentation::isComposite)
                 .flatMap(role ->
                     realmResource.rolesById().getRoleComposites(role.getId()).stream().map(RoleRepresentation::getId)
-                ).collect(Collectors.toList());
+                ).toList();
 
             requestedRoles = requestedRoles.stream()
                 .filter(role -> removeRequestedRoles.stream().noneMatch(id -> id.equals(role.getId())))
