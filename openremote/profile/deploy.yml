@@ -323,7 +323,7 @@ services:
   # Keycloak identity provider
   keycloak:
 #    image: openremote/keycloak:${KEYCLOAK_VERSION:-latest}
-    image: ixxc/keycloak:1.0
+    image: ixxc/keycloak-arm64:1.0
     restart: no
     # Map any custom themes into the /deployment/keycloak/themes dir:
     #volumes:
