@@ -19,12 +19,14 @@
  */
 package org.openremote.manager.setup;
 
+import org.openremote.model.Constants;
 import org.openremote.model.Container;
 import org.openremote.model.security.ClientRole;
 import org.openremote.model.security.Realm;
 import org.openremote.model.security.User;
 
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.openremote.model.Constants.*;
 
@@ -59,5 +61,18 @@ public class KeycloakInitSetup extends AbstractKeycloakSetup {
 
         // Give admin all roles on application client level
         keycloakProvider.updateUserRoles(MASTER_REALM, adminUser.getId(), KEYCLOAK_CLIENT_ID, ClientRole.READ.getValue(), ClientRole.WRITE.getValue(), ClientRole.DEFAULT_ROLES.getValue());
+
+        // Create the default service user for prediction service
+        User serviceUser = new User()
+                .setServiceAccount(true)
+                .setEnabled(true)
+                .setUsername("ixxc");
+        serviceUser = keycloakProvider.createUpdateUser(Constants.MASTER_REALM, serviceUser, "sGHNuQVWvIi2Cd53XTrBMA9RmsMTqive", true);
+        keycloakProvider.updateUserRoles(
+                Constants.MASTER_REALM,
+                serviceUser.getId(),
+                Constants.KEYCLOAK_CLIENT_ID,
+                Stream.of(ClientRole.READ_ASSETS, ClientRole.WRITE_ASSETS, ClientRole.WRITE_ATTRIBUTES).map(ClientRole::getValue).toArray(String[]::new)
+        );
     }
 }

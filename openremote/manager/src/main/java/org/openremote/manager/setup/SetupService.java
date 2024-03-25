@@ -75,6 +75,8 @@ public class SetupService implements ContainerService {
             tasks.add(new KeycloakInitSetup(container));
         }
 
+        tasks.add(new ManagerSetup(container));
+
         tasks.addAll(ServiceLoader.load(SetupTasks.class).stream().map(ServiceLoader.Provider::get)
             .flatMap(discoveredSetupTasks -> {
                 LOG.info("Found custom SetupTasks provider on classpath: " + discoveredSetupTasks.getClass().getName());
@@ -98,7 +100,7 @@ public class SetupService implements ContainerService {
 
     @Override
     public void start(Container container) {
-
+        LOG.info("Starting setup service");
         try {
             if (!tasks.isEmpty()) {
                 LOG.info("--- EXECUTING START TASKS ---");

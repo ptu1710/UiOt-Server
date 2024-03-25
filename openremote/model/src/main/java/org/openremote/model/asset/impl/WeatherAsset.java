@@ -66,6 +66,9 @@ public class WeatherAsset extends Asset<WeatherAsset> {
     public static final AttributeDescriptor<Integer> HUMIDITY = new AttributeDescriptor<>("humidity", ValueType.POSITIVE_INTEGER,
         new MetaItem<>(MetaItemType.READ_ONLY)
     ).withUnits(UNITS_PERCENTAGE).withConstraints(new ValueConstraint.Min(0), new ValueConstraint.Max(100));
+    public static final AttributeDescriptor<Integer> RAIN_TOMORROW = new AttributeDescriptor<>("rainTomorrow", ValueType.POSITIVE_INTEGER,
+            new MetaItem<>(MetaItemType.READ_ONLY)
+    ).withUnits(UNITS_PERCENTAGE).withConstraints(new ValueConstraint.Min(0), new ValueConstraint.Max(100));
 
     public static final AssetDescriptor<WeatherAsset> DESCRIPTOR = new AssetDescriptor<>("weather-partly-cloudy", "49B0D8", WeatherAsset.class);
 
@@ -77,6 +80,11 @@ public class WeatherAsset extends Asset<WeatherAsset> {
 
     public WeatherAsset(String name) {
         super(name);
+    }
+
+    public WeatherAsset(String name, String id) {
+        super(name);
+        super.setId(id);
     }
 
     public Optional<Double> getTemperature() {
@@ -109,5 +117,9 @@ public class WeatherAsset extends Asset<WeatherAsset> {
 
     public Optional<Integer> getHumidity() {
         return getAttributes().getValue(HUMIDITY);
+    }
+
+    public Optional<Integer> getRainTomorrow() {
+        return getAttributes().getValue(RAIN_TOMORROW);
     }
 }

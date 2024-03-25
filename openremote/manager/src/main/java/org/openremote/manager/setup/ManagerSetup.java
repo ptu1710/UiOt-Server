@@ -91,8 +91,11 @@ public class ManagerSetup implements Setup {
 
     @Override
     public void onStart() throws Exception {
+        LOG.info("Starting Manager setup");
+        createDefaultWeatherAsset("Default Weather");
 
         if (!Files.exists(Paths.get(provisionDocRoot.toString()))) {
+            LOG.info("No provisioning assets found");
             return;
         }
 
@@ -458,6 +461,21 @@ public class ManagerSetup implements Setup {
         shipAsset.getAttributes().addOrReplace(new Attribute<>(Asset.LOCATION, location));
 
         return shipAsset;
+    }
+
+    protected WeatherAsset createDefaultWeatherAsset(String name) {
+        Asset<?> defaultWeather = assetStorageService.find("3bPcjYOCowRm94FK9UNm1i");
+        if (defaultWeather instanceof WeatherAsset) {
+            LOG.info("Default weather asset already exists");
+            return (WeatherAsset) defaultWeather;
+        }
+
+        LOG.info("Creating default weather asset");
+        WeatherAsset weatherAsset = new WeatherAsset(name, "3bPcjYOCowRm94FK9UNm1i");
+        weatherAsset.setRealm(Constants.MASTER_REALM);
+        assetStorageService.merge(weatherAsset);
+
+        return weatherAsset;
     }
 
     protected void provisionAssets() throws IOException {

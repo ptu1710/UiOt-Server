@@ -20,10 +20,13 @@
 package org.openremote.manager.setup.custom;
 
 import org.openremote.manager.setup.AbstractKeycloakSetup;
+import org.openremote.model.Constants;
 import org.openremote.model.Container;
 import org.openremote.model.security.ClientRole;
-import org.openremote.model.security.Realm;
+import org.openremote.model.security.User;
 import org.openremote.model.util.TextUtil;
+
+import java.util.stream.Stream;
 
 import static org.openremote.container.util.MapAccess.getString;
 
@@ -46,12 +49,25 @@ public class CustomKeycloakSetup extends AbstractKeycloakSetup {
     @Override
     public void onStart() throws Exception {
         // Create custom realm
-        Realm customRealm = createRealm("custom", "Custom", true);
+        // Realm customRealm = createRealm("custom", "Custom", true);
 
         // Create user(s) for custom realm
-        createUser("custom", "custom", customUserPassword, "First", "Last", null, true, new ClientRole[] {
+        /*createUser("custom", "custom", customUserPassword, "First", "Last", null, true, new ClientRole[] {
             ClientRole.READ,
             ClientRole.WRITE
-        });
+        });*/
+
+        // Create client(s) for custom realm
+        User serviceUser = new User()
+                .setServiceAccount(true)
+                .setEnabled(true)
+                .setUsername("ixxc");
+        serviceUser = keycloakProvider.createUpdateUser(Constants.MASTER_REALM, serviceUser, "7fDq4nmcDwjkCqLzrFvpMV", true);
+        keycloakProvider.updateUserRoles(
+                Constants.MASTER_REALM,
+                serviceUser.getId(),
+                Constants.KEYCLOAK_CLIENT_ID,
+                Stream.of(ClientRole.READ_ASSETS, ClientRole.WRITE_ASSETS, ClientRole.WRITE_ATTRIBUTES).map(ClientRole::getValue).toArray(String[]::new)
+        );
     }
 }

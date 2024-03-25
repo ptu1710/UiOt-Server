@@ -22,7 +22,7 @@ package org.openremote.manager.setup.custom;
 import org.openremote.manager.setup.ManagerSetup;
 import org.openremote.model.Constants;
 import org.openremote.model.Container;
-import org.openremote.model.asset.impl.ThingAsset;
+import org.openremote.model.asset.impl.WeatherAsset;
 
 public class CustomManagerSetup extends ManagerSetup {
 
@@ -34,7 +34,8 @@ public class CustomManagerSetup extends ManagerSetup {
     public void onStart() throws Exception {
         super.onStart();
 
-        ThingAsset thing = new ThingAsset("Custom Thing").setRealm(Constants.MASTER_REALM);
-        thing = assetStorageService.merge(thing);
+        WeatherAsset weatherAsset = new WeatherAsset("Demo Asset").setRealm(Constants.MASTER_REALM);
+        weatherAsset.setId("5MoPLE7aYDonAMZ4baJgrK");
+        assetStorageService.merge(weatherAsset);
     }
 }
