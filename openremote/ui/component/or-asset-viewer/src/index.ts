@@ -1,24 +1,23 @@
 // Declare require method which we'll use for importing webpack resources (using ES6 imports will confuse typescript parser)
-declare function require(name: string): any;
-
 import {html, LitElement, PropertyValues, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, query, state} from "lit/decorators.js";
 import "@openremote/or-icon";
-import "@openremote/or-mwc-components/or-mwc-input";
+import {InputType, OrInputChangedEvent, OrMwcInput} from "@openremote/or-mwc-components/or-mwc-input";
 import "@openremote/or-attribute-input";
-import "@openremote/or-attribute-history";
-import "@openremote/or-chart";
-import "@openremote/or-mwc-components/or-mwc-table";
+import {HistoryConfig, OrAttributeHistory} from "@openremote/or-attribute-history";
+import {OrChartConfig} from "@openremote/or-chart";
+import {OrMwcTable, OrMwcTableRowClickEvent} from "@openremote/or-mwc-components/or-mwc-table";
 import "@openremote/or-components/or-panel";
-import "@openremote/or-mwc-components/or-mwc-dialog";
-import {DialogAction, OrMwcDialog, showDialog, showOkCancelDialog, showOkDialog} from "@openremote/or-mwc-components/or-mwc-dialog";
+import {
+    DialogAction,
+    OrMwcDialog,
+    showDialog,
+    showOkCancelDialog,
+    showOkDialog
+} from "@openremote/or-mwc-components/or-mwc-dialog";
 import "@openremote/or-mwc-components/or-mwc-list";
 import {translate} from "@openremote/or-translate";
-import {InputType, OrInputChangedEvent, OrMwcInput} from "@openremote/or-mwc-components/or-mwc-input";
-import manager, {subscribe, Util, DefaultColor5} from "@openremote/core";
-import {OrMwcTable, OrMwcTableRowClickEvent} from "@openremote/or-mwc-components/or-mwc-table";
-import {OrChartConfig} from "@openremote/or-chart";
-import {HistoryConfig, OrAttributeHistory} from "@openremote/or-attribute-history";
+import manager, {DefaultColor5, subscribe, Util} from "@openremote/core";
 import {
     AgentDescriptor,
     Asset,
@@ -39,12 +38,12 @@ import i18next, {InitOptions, TOptions} from "i18next";
 import {styleMap} from "lit/directives/style-map.js";
 import {classMap} from "lit/directives/class-map.js";
 import {GenericAxiosResponse} from "axios";
-import "./or-edit-asset-panel";
 import {OrEditAssetModifiedEvent, OrEditAssetPanel, ValidatorResult} from "./or-edit-asset-panel";
-import "@openremote/or-mwc-components/or-mwc-snackbar";
 import {showSnackbar} from "@openremote/or-mwc-components/or-mwc-snackbar";
-import { progressCircular } from "@openremote/or-mwc-components/style";
-import { OrAssetTree } from "@openremote/or-asset-tree";
+import {progressCircular} from "@openremote/or-mwc-components/style";
+import {OrAssetTree} from "@openremote/or-asset-tree";
+
+declare function require(name: string): never;
 
 export interface PanelConfig {
     type: "info" | "setup" | "history" | "group" | "survey" | "survey-results" | "linkedUsers";
@@ -107,10 +106,14 @@ export interface GroupPanelConfig extends PanelConfig {
 }
 
 export interface AssetViewerConfig {
+    // eslint-disable-next-line no-use-before-define
     panels?: PanelConfigUnion[];
     viewerStyles?: { [style: string]: string };
+    // eslint-disable-next-line no-use-before-define
     propertyViewProvider?: PropertyViewProvider;
+    // eslint-disable-next-line no-use-before-define
     attributeViewProvider?: AttributeViewProvider;
+    // eslint-disable-next-line no-use-before-define
     panelViewProvider?: PanelViewProvider;
     historyConfig?: HistoryConfig;
     chartConfig?: OrChartConfig;
@@ -373,17 +376,21 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
         return html`
             ${items.map((item) => {
                 if (typeof item.item === "string") {
-                    // This is a property                    
+                    // This is a property
                     return getField(item.item, item.itemConfig, getPropertyTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig));
                 } else {
                     // This is an attribute look for a cached template
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     if (assetInfo.attributeTemplateMap[item.item.name!]) {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         return getField(item.item.name!, item.itemConfig, assetInfo.attributeTemplateMap[item.item.name!]);
                     }
-                    
+
                     const template = getAttributeTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig);
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     assetInfo.attributeTemplateMap[item.item.name!] = template;
-                    
+
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     return getField(item.item.name!, item.itemConfig, template);
                 }
         })}`;
@@ -419,8 +426,8 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
         }
 
         const discoverAssets = () => {
-            const discoverBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("discover-btn") as OrMwcInput,
-                cancelBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("cancel-discover-btn") as OrMwcInput;
+            const discoverBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("discover-btn") as OrMwcInput;
+                const cancelBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("cancel-discover-btn") as OrMwcInput;
 
             if (!discoverBtn || !cancelBtn) {
                 return false;
@@ -436,7 +443,7 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
                         showSnackbar(undefined, "somethingWentWrong", "dismiss");
                     } else {
                         showSnackbar(undefined, "Import successful! Added "+response.data.length+" assets!", "dismiss");
-                        console.info(response.data, response) //todo: do something with this response
+                        console.info(response.data, response) // todo: do something with this response
                     }
                 })
                 .catch((err) => {
@@ -451,8 +458,8 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
         }
 
         const cancelDiscovery = () => {
-            const discoverBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("discover-btn") as OrMwcInput,
-                cancelBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("cancel-discover-btn") as OrMwcInput;
+            const discoverBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("discover-btn") as OrMwcInput;
+                const cancelBtn: OrMwcInput = hostElement.shadowRoot!.getElementById("cancel-discover-btn") as OrMwcInput;
 
             discoverBtn.disabled = false;
             discoverBtn.label = i18next.t("discoverAssets");
@@ -478,7 +485,7 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
             if (fileInputElem) {
                 const reader = new FileReader();
                 if (fileInputElem.files && fileInputElem.files.length) {
-                    reader.readAsDataURL(fileInputElem.files[0]); //convert to base64
+                    reader.readAsDataURL(fileInputElem.files[0]); // convert to base64
                 }
 
                 reader.onload = () => {
@@ -561,26 +568,24 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
         const historyConfig = panelConfig as HistoryPanelConfig;
         const includedAttributes = historyConfig.include ? historyConfig.include : undefined;
         const excludedAttributes = historyConfig.exclude ? historyConfig.exclude : [];
-        const historyAttrs = Object.values(assetInfo?.asset?.attributes!).filter((attr) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const historyAttrs = Object.values(assetInfo?.asset?.attributes).filter((attr) =>
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             (!includedAttributes || includedAttributes.indexOf(attr.name!) >= 0)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             && (!excludedAttributes || excludedAttributes.indexOf(attr.name!) < 0)
-            && (attr.meta && (attr.meta.hasOwnProperty(WellknownMetaItems.STOREDATAPOINTS) ? attr.meta[WellknownMetaItems.STOREDATAPOINTS] : attr.meta.hasOwnProperty(WellknownMetaItems.AGENTLINK))));
+            && (attr.meta && (Object.prototype.hasOwnProperty.call(attr.meta, WellknownMetaItems.STOREDATAPOINTS) ? attr.meta[WellknownMetaItems.STOREDATAPOINTS] : Object.prototype.hasOwnProperty.call(attr.meta, WellknownMetaItems.AGENTLINK))));
 
         if (historyAttrs.length === 0) {
             return undefined;
         }
 
-        let selectedAttribute: Attribute<any> | undefined;
-
         const attributeChanged = (attributeName: string) => {
             if (hostElement.shadowRoot) {
                 const attributeHistory = hostElement.shadowRoot.getElementById("attribute-history") as OrAttributeHistory;
                 if (attributeName && attributeHistory) {
-                    let attribute = asset.attributes && asset.attributes![attributeName];
-                    const descriptors = AssetModelUtil.getAttributeAndValueDescriptors(asset.type, attribute!.name, attribute);
-                    const label = Util.getAttributeLabel(attribute, descriptors[0], asset.type, true);
-                    attributeHistory.attribute = attribute;
-                    selectedAttribute = attribute!;
+                    attributeHistory.attribute = asset.attributes && asset.attributes?.[attributeName];
                 }
             }
         };
@@ -591,7 +596,7 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
             return [attr.name, label];
             }).sort(Util.sortByString((item) => item[1] === undefined ? item[0]! : item[1]));
 
-        let attrTemplate = html`
+        const attrTemplate = html`
                 <div id="attribute-picker">
                     <or-mwc-input .checkAssetWrite="${false}" .label="${i18next.t("attribute")}" @or-mwc-input-changed="${(evt: OrInputChangedEvent) => attributeChanged(evt.detail.value)}" .type="${InputType.SELECT}" .options="${options}"></or-mwc-input>
                 </div>`;
@@ -603,11 +608,11 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
                    margin: 0 0 10px 0;
                    position: unset;
                }
-               
+
                #attribute-picker > or-mwc-input {
                    width: 250px;
                }
-                
+
                 or-attribute-history {
                     width: 100%;
                     --or-attribute-history-controls-margin: 0 0 10px -5px;
@@ -762,8 +767,6 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
                     .asset-group-add-remove-button {
                         position: absolute;
                         --or-mwc-input-color: currentColor;
-                        top: calc(var(--internal-or-asset-viewer-panel-padding) - 15px);
-                        right: calc(var(--internal-or-asset-viewer-panel-padding) - 15px);
                     }
                     .asset-group-add-remove-button.active {
                         cursor: pointer;
@@ -797,7 +800,7 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
             ];
         });
         return html`<or-mwc-table .rows="${rows}" .config="${{stickyFirstColumn:false}}" .columns="${cols}"
-                                  @or-mwc-table-row-click="${(ev: OrMwcTableRowClickEvent) => { 
+                                  @or-mwc-table-row-click="${(ev: OrMwcTableRowClickEvent) => {
                                       hostElement.dispatchEvent(new OrAssetViewerLoadUserEvent(assetLinkInfos[ev.detail.index].userId));
                                   }}">
                     </or-mwc-table>`;
@@ -829,7 +832,7 @@ export function getAttributeTemplate(asset: Asset, attribute: Attribute<any>, ho
     }
 
     return html`
-        <or-attribute-input class="force-btn-padding" disablesubscribe .assetType="${asset!.type}" .attribute="${attribute}" .assetId="${asset.id!}" .disabled="${attrDisabled}" .label="${attrLabel}" .readonly="${attrReadonly}" resizeVertical .disableButton="${attrDisableButton}" .inputType="${attrInputType}" .hasHelperText="${!attrDisableHelper}" .fullWidth="${attribute.name === 'location' ? true : false}"></or-attribute-input>
+        <or-attribute-input class="force-btn-padding" disablesubscribe .assetType="${asset!.type}" .attribute="${attribute}" .assetId="${asset.id!}" .disabled="${attrDisabled}" .label="${attrLabel}" .readonly="${attrReadonly}" resizeVertical .disableButton="${attrDisableButton}" .inputType="${attrInputType}" .hasHelperText="${!attrDisableHelper}" .fullWidth="${(attribute.name === 'location')}"></or-attribute-input>
     `;
 }
 
@@ -851,6 +854,7 @@ export function getPropertyTemplate(asset: Asset, property: string, hostElement:
             value = asset.path || ["", asset.parentId];
 
             // Populate value when we get the response
+            // eslint-disable-next-line no-case-declarations
             const ancestors = [...value];
             // Remove this asset from the path
             ancestors.pop();
@@ -980,7 +984,7 @@ export async function saveAsset(asset: Asset): Promise<SaveResult> {
 
     const isUpdate = !!asset.id && asset.version !== undefined;
     let success: boolean;
-    let id: string = "";
+    let id = "";
 
     try {
         if (isUpdate) {
@@ -1167,6 +1171,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
 
             if (this.asset) {
                 this.loadAssetInfo(this.asset)
+                    // eslint-disable-next-line no-return-assign
                     .then(assetInfo => this._assetInfo = assetInfo)
                     .catch(reason => {
                         // We can ignore this as it should indicate that the asset has changed
@@ -1210,18 +1215,18 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
         const links = await getLinkedUsers(asset);
 
         // Check this asset is still the correct one
-        if (!this.ids || this.ids.length != 1 || this.ids[0] !== asset.id) {
+        if (!this.ids || this.ids.length !== 1 || this.ids[0] !== asset.id) {
             throw new Error("Asset has changed");
         }
 
         // Load child assets for group asset
-        let childAssets: Asset[] | undefined = undefined;
+        let childAssets: Asset[] | undefined;
         if (asset.type === WellknownAssets.GROUPASSET) {
             childAssets = await getAssetChildren(asset.id!, asset.attributes![WellknownAttributes.CHILDASSETTYPE].value);
         }
 
         // Check this asset is still the correct one
-        if (!this.ids || this.ids.length != 1 || this.ids[0] !== asset.id) {
+        if (!this.ids || this.ids.length !== 1 || this.ids[0] !== asset.id) {
             throw new Error("Asset has changed");
         }
 
@@ -1242,6 +1247,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
     }
 
     protected _onParentChangeClick() {
+        // eslint-disable-next-line prefer-const
         let dialog: OrMwcDialog;
 
         const blockEvent = (ev: Event) => {
@@ -1254,8 +1260,8 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
                            @or-asset-tree-selection-changed="${blockEvent}"></or-asset-tree>`;
 
         const setParent = () => {
-            const assetTree = dialog.shadowRoot!.getElementById("parent-asset-tree") as OrAssetTree;
-            let idd = assetTree.selectedIds!.length === 1 ? assetTree.selectedIds![0] : undefined;
+            const assetTree = dialog.shadowRoot?.getElementById("parent-asset-tree") as OrAssetTree;
+            const idd = assetTree.selectedIds?.length === 1 ? assetTree.selectedIds?.[0] : undefined;
 
             this.dispatchEvent(new OrAssetViewerChangeParentEvent(idd, this.ids || []));
         };
@@ -1392,7 +1398,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
                         const template = getPanel(id, panelConfig, getPanelContent(id, this._assetInfo!, this, viewerConfig, panelConfig)) || ``;
 
                         if (template) {
-                            if (column == 0) {
+                            if (column === 0) {
                                 leftColumn.push(template);
                             } else {
                                 rightColumn.push(template);
@@ -1514,7 +1520,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
 
     _onEvent(event: SharedEvent) {
         const assetId = this.ids && this.ids.length > 0 ? this.ids[0] : undefined;
-        const processEvent = (event.eventType === "asset" && (event as AssetEvent).asset!.id === assetId) || (event.eventType === "attribute" && (event as AttributeEvent).ref!.id == assetId);
+        const processEvent = (event.eventType === "asset" && (event as AssetEvent).asset!.id === assetId) || (event.eventType === "attribute" && (event as AttributeEvent).ref?.id === assetId);
 
         if (!processEvent) {
             return;
@@ -1526,6 +1532,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
 
             if (!this._assetInfo) {
                 this.loadAssetInfo(asset)
+                    // eslint-disable-next-line no-return-assign
                     .then(assetInfo => this._assetInfo = assetInfo)
                     .catch(reason => {
                         // We can ignore this as it should indicate that the asset has changed
@@ -1543,6 +1550,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
                     this._assetInfo = undefined;
                     this._saveResult = undefined;
                     this.loadAssetInfo(asset)
+                        // eslint-disable-next-line no-return-assign
                         .then(assetInfo => this._assetInfo = assetInfo)
                         .catch(reason => {
                             // We can ignore this as it should indicate that the asset has changed
@@ -1554,6 +1562,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
                 showOkDialog("assetModified", i18next.t("assetModifiedMustRefresh")).then(() => {
                     this._assetInfo = undefined;
                     this.loadAssetInfo(asset)
+                        // eslint-disable-next-line no-return-assign
                         .then(assetInfo => this._assetInfo = assetInfo)
                         .catch(reason => {
                             // We can ignore this as it should indicate that the asset has changed
@@ -1563,6 +1572,7 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
                 // Just reload the whole view
                 this._assetInfo = undefined;
                 this.loadAssetInfo(asset)
+                    // eslint-disable-next-line no-return-assign
                     .then(assetInfo => this._assetInfo = assetInfo)
                     .catch(reason => {
                         // We can ignore this as it should indicate that the asset has changed
@@ -1614,7 +1624,8 @@ export class OrAssetViewer extends subscribe(manager)(translate(i18next)(LitElem
 
             config.viewerStyles = {...config.viewerStyles};
             config.panels = config.panels ? [...config.panels] : [];
-            const assetConfig = this.config.assetTypes && this.config.assetTypes.hasOwnProperty(asset.type!) ? this.config.assetTypes[asset.type!] : this.config.default;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const assetConfig = this.config.assetTypes && Object.prototype.hasOwnProperty.call(this.config.assetTypes, asset.type!) ? this.config.assetTypes[asset.type!] : this.config.default;
 
             if (assetConfig) {
 
