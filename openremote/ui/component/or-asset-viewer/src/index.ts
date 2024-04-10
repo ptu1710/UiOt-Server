@@ -4,6 +4,7 @@ import {customElement, property, query, state} from "lit/decorators.js";
 import "@openremote/or-icon";
 import {InputType, OrInputChangedEvent, OrMwcInput} from "@openremote/or-mwc-components/or-mwc-input";
 import "@openremote/or-attribute-input";
+import "@openremote/or-attribute-input-new";
 import {HistoryConfig, OrAttributeHistory} from "@openremote/or-attribute-history";
 import {OrChartConfig} from "@openremote/or-chart";
 import {OrMwcTable, OrMwcTableRowClickEvent} from "@openremote/or-mwc-components/or-mwc-table";
@@ -379,6 +380,11 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
                     // This is a property
                     return getField(item.item, item.itemConfig, getPropertyTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig));
                 } else {
+                    if (item.item.name === "rainTomorrow") {
+                        console.log(item.item.name)
+                        return getCardLayout(item.item.name, item.itemConfig, getSpecAttributeTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig));
+                    }
+                    
                     // This is an attribute look for a cached template
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     if (assetInfo.attributeTemplateMap[item.item.name!]) {
@@ -832,7 +838,48 @@ export function getAttributeTemplate(asset: Asset, attribute: Attribute<any>, ho
     }
 
     return html`
-        <or-attribute-input class="force-btn-padding" disablesubscribe .assetType="${asset!.type}" .attribute="${attribute}" .assetId="${asset.id!}" .disabled="${attrDisabled}" .label="${attrLabel}" .readonly="${attrReadonly}" resizeVertical .disableButton="${attrDisableButton}" .inputType="${attrInputType}" .hasHelperText="${!attrDisableHelper}" .fullWidth="${(attribute.name === 'location')}"></or-attribute-input>
+        <or-attribute-input class="force-btn-padding" disablesubscribe .assetType="${asset!.type}" .attribute="${attribute}" .assetId="${asset.id!}" .disabled="${attrDisabled}" .label="${attrLabel}" .readonly="${attrReadonly}" resizeVertical .disableButton="${attrDisableButton}" .inputType="${attrInputType}" .hasHelperText="${!attrDisableHelper}" .fullWidth="${(attribute.name === 'location' || attribute.name === 'rainTomorrow')}"></or-attribute-input>
+    `;
+}
+
+export function getSpecAttributeTemplate(asset: Asset, attribute: Attribute<any>, hostElement: LitElement, viewerConfig: AssetViewerConfig, panelConfig: PanelConfig, itemConfig: InfoPanelItemConfig): TemplateResult {
+    if (viewerConfig.attributeViewProvider) {
+        const result = viewerConfig.attributeViewProvider(asset, attribute, hostElement, viewerConfig, panelConfig);
+        if (result) {
+            return result;
+        }
+    }
+
+    let attrLabel: string | undefined;
+    let attrDisabled: boolean | undefined;
+    let attrReadonly: boolean | undefined;
+    let attrDisableButton: boolean | undefined;
+    let attrInputType: InputType | undefined;
+    let attrDisableHelper: boolean | undefined;
+
+    if (itemConfig) {
+        attrLabel = itemConfig.label;
+        attrDisabled = itemConfig.disabled;
+        attrReadonly = itemConfig.readonly;
+        attrDisableButton = itemConfig.disableButton;
+        attrDisableHelper = itemConfig.disableHelperText;
+        attrInputType = itemConfig.inputTypeOverride;
+    }
+
+    return html`
+        <or-attribute-input-new disablesubscribe
+                            .assetType="${asset?.type}"
+                            .attribute="${attribute}"
+                            .assetId="${asset.id!}"
+                            .disabled="${attrDisabled}"
+                            .label="${attrLabel}"
+                            .readonly="${attrReadonly}"
+                            resizeVertical
+                            .disableButton="${attrDisableButton}"
+                            .inputType="${attrInputType}"
+                            .hasHelperText="${!attrDisableHelper}"
+                            .fullWidth="${(attribute.name === 'rainTomorrow')}">
+        </or-attribute-input-new>
     `;
 }
 
@@ -894,6 +941,21 @@ export function getField(name: string, itemConfig?: InfoPanelItemConfig, content
                 ${content}
             </div>
         `;
+}
+
+export function getCardLayout(name: string, itemConfig?: InfoPanelItemConfig, content?: TemplateResult): TemplateResult {
+    if (!content) {
+        return html``;
+    }
+
+    console.log(name, itemConfig, content);
+
+    return html`
+        <div id="card-${name}" style="${itemConfig && itemConfig.styles ? styleMap(itemConfig.styles) : ""}"
+             class="${classMap({field: false, mobileHidden: !!itemConfig && !!itemConfig.hideOnMobile})} special-view">
+            ${content}
+        </div>
+    `;
 }
 
 async function getAssetNames(ids: string[]): Promise<string[]> {
@@ -1049,7 +1111,7 @@ export const DEFAULT_VIEWER_CONFIG: AssetViewerConfig = {
                 include:[]
             },
             attributes: {
-                exclude: ["location", "notes", "manufacturer", "model"]
+                exclude: ["location", "notes", "manufacturer", "model", "rainTomorrow"]
             }
         },
         {
@@ -1071,6 +1133,17 @@ export const DEFAULT_VIEWER_CONFIG: AssetViewerConfig = {
                         readonly: true
                     }
                 }
+            }
+        },
+        {
+            title: "rainTomorrow",
+            type: "info",
+            column: 1,
+            properties: {
+                include:[]
+            },
+            attributes: {
+                include: ["rainTomorrow"]
             }
         },
         {

@@ -3536,6 +3536,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@openremote/or-attribute-input-new@workspace:^, @openremote/or-attribute-input-new@workspace:openremote/ui/component/or-attribute-input-new":
+  version: 0.0.0-use.local
+  resolution: "@openremote/or-attribute-input-new@workspace:openremote/ui/component/or-attribute-input-new"
+  dependencies:
+    "@openremote/core": "workspace:*"
+    "@openremote/or-components": "npm:^1.1.0"
+    "@openremote/or-json-forms": "npm:^1.1.0"
+    "@openremote/or-map": "npm:^1.1.0"
+    "@openremote/or-mwc-components": "npm:^1.1.0"
+    "@openremote/or-translate": "npm:^1.1.0"
+    "@openremote/util": "workspace:*"
+    lit: "npm:^2.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@openremote/or-attribute-input@npm:^1.1.0, @openremote/or-attribute-input@workspace:openremote/ui/component/or-attribute-input":
   version: 0.0.0-use.local
   resolution: "@openremote/or-attribute-input@workspace:openremote/ui/component/or-attribute-input"
@@ -11662,6 +11677,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@openremote/or-attribute-input-new": "workspace:^"
     lerna: "npm:^4.0.0"
   languageName: unknown
   linkType: soft

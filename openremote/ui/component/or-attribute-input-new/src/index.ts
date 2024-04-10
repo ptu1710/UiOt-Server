@@ -67,30 +67,31 @@ declare global {
 
 export function getAttributeInputWrapper(content: TemplateResult, value: any, loading: boolean, disabled: boolean, helperText: string | undefined, label: string | undefined, buttonIcon?: string, sendValue?: () => void, fullWidth?: boolean): TemplateResult {
 
-    if (helperText) {
-        content = html`
-                    <div id="wrapper-helper">
-                        ${label ? html`<div id="wrapper-label">${label}</div>` : ``}
-                        <div id="wrapper-input">${content}</div>
-                        <div id="helper-text">${helperText}</div>
-                    </div>
-                `;
-    }
+    // if (helperText) {
+    //     content = html`
+    //                 <div id="wrapper-helper asdasda">
+    //                     ${label ? html`<div id="wrapper-label">${label}</div>` : ``}
+    //                     <div id="wrapper-input aaaa">${content}</div>
+    //                     <div id="helper-text">${helperText}</div>
+    //                 </div>
+    //             `;
+    // }
 
-    if (buttonIcon) {
-        content = html`
-                ${content}
-                <or-mwc-input id="send-btn" icon="${buttonIcon}" type="button" .disabled="${disabled || loading}" @or-mwc-input-changed="${(e: OrInputChangedEvent) => {
-            e.stopPropagation();
-            if (sendValue) {
-                sendValue();
-            }
-        }}"></or-mwc-input>
-            `;
-    }
+    // if (buttonIcon) {
+    //     content = html`
+    //             ${content}
+    //             <or-mwc-input id="send-btn" icon="${buttonIcon}" type="button"
+    //                           .disabled="${disabled || loading}"
+    //                           @or-mwc-input-changed="${(e: OrInputChangedEvent) => {
+    //         e.stopPropagation();
+    //         if (sendValue) {
+    //             sendValue();
+    //         }
+    //     }}"></or-mwc-input>`;
+    // }
 
     return html`
-            <div id="wrapper" class="${buttonIcon || fullWidth ? "no-padding" : "right-padding"}">
+            <div id="wrapper AAAA" class="${buttonIcon || fullWidth ? "no-padding" : "right-padding"}">
                 ${content}
                 <div id="scrim" class="${ifDefined(loading ? undefined : "hidden")}"><progress class="pure-material-progress-circular"></progress></div>
             </div>
@@ -267,7 +268,7 @@ export const jsonFormsInputTemplateProvider: (fallback: ValueInputProvider) => V
 const DEFAULT_TIMEOUT = 5000;
 
 // TODO: Add support for attribute not found and attribute deletion/addition
-@customElement("or-attribute-input")
+@customElement("or-attribute-input-new")
 export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitElement)) {
 
     // language=CSS
@@ -276,6 +277,7 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
             progressCircular,
             css`
             :host {
+                width: 100%;
                 display: inline-block;
             }
             
@@ -302,6 +304,12 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
             
             #wrapper.right-padding {
                 padding-right: 52px;
+            }
+            
+            #wrapper-value {
+                width: 100%;
+                display: flex;
+                justify-content: space-around;
             }
             
             #wrapper-helper {
@@ -602,13 +610,13 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
         let label;
 
         if (this.label) {
-            label = this.label;
+            label = this.label + "AAA";
         } else if (this.label !== "" && this.label !== null) {
-            const descriptors = AssetModelUtil.getAttributeAndValueDescriptors(this.assetType, this.attribute ? this.attribute!.name : undefined, this._attributeDescriptor);
-            label = Util.getAttributeLabel(this.attribute, descriptors[0], this.assetType, true);
+            const descriptors = AssetModelUtil.getAttributeAndValueDescriptors(this.assetType, this.attribute ? this.attribute?.name : undefined, this._attributeDescriptor);
+            label = Util.getAttributeLabel(this.attribute, descriptors[0], this.assetType, true) + "BBB";
         }
 
-        return label;
+        return label + "CCC";
     }
 
     public isReadonly(): boolean {
@@ -634,15 +642,30 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
         const focus = this._requestFocus;
         this._requestFocus = false;
         const helperText = this.hasHelperText ? getHelperText(!!this._writeTimeoutHandler, this._sendError, this.getTimestamp()) : undefined;
-        const buttonIcon = !this.showButton ? (this.disableButton ? undefined : "") : this._writeTimeoutHandler ? "send-clock" : "send";
+        // const buttonIcon = !this.showButton ? (this.disableButton ? undefined : "") : this._writeTimeoutHandler ? "send-clock" : "send";
 
         if (this._templateProvider && this._templateProvider.templateFunction) {
-            content = html`${until(this._templateProvider.templateFunction(value, focus, loading, !!this._writeTimeoutHandler, this._sendError, this._templateProvider.supportsHelperText ? helperText : undefined), ``)}`;
+            let result = "NO";
+            if (value > 50) {
+                result = "YES";
+            }
+            content = html`
+                <div id="wrapper-value">
+                    <div id="value">
+                        ${value} %
+                    </div>
+                    <div id="result">
+                        ${result}
+                    </div>
+                </div></div>
+            `;
+
+            // content = html`${until(this._templateProvider.templateFunction(value, focus, loading, !!this._writeTimeoutHandler, this._sendError, this._templateProvider.supportsHelperText ? helperText : undefined), ``)}`;
         } else {
             content = html`<or-translate .value="attributeUnsupported"></or-translate>`;
         }
 
-        content = getAttributeInputWrapper(content, value, loading, !!this.disabled, this._templateProvider.supportsHelperText ? undefined : helperText, this._templateProvider.supportsLabel ? undefined : this.getLabel(), this._templateProvider.supportsSendButton ? buttonIcon : undefined, () => this._updateValue(), this.fullWidth);
+        // content = getAttributeInputWrapper(content, value, loading, !!this.disabled, this._templateProvider.supportsHelperText ? undefined : helperText, this._templateProvider.supportsLabel ? undefined : this.getLabel(), this._templateProvider.supportsSendButton ? buttonIcon : undefined, () => this._updateValue(), this.fullWidth);
         return content;
     }
 

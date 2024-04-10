@@ -276,6 +276,19 @@ export const style = css`
         margin: 30px;
     }
 
+    .special-view {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .special-view:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
     @media screen and (max-width: 767px) {
         #wrapper {
             position: absolute;

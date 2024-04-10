@@ -9,5 +9,8 @@
   ],
   "devDependencies": {
     "lerna": "^4.0.0"
+  },
+  "dependencies": {
+    "@openremote/or-attribute-input-new": "workspace:^"
   }
 }
