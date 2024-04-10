@@ -277,12 +277,15 @@ export const style = css`
     }
 
     .special-view {
+        width: 100%;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         background-color: #fff;
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 30px 20px;
+        margin: 10px 0;
         transition: box-shadow 0.3s ease;
+        font-size: 1.5rem;
+        font-weight: bold;
     }
 
     .special-view:hover {

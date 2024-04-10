@@ -155,6 +155,37 @@ export class OrMapAssetCard extends subscribe(manager)(LitElement) {
 
         const highlightedAttr = getMarkerConfigAttributeName(this.markerconfig, this.asset.type);
 
+        console.log("highlightedAttr: ", this.asset?.attributes?.rainTomorrow.value);
+
+        let cardType = html``;
+        if (this.asset.type == "WeatherAsset") {
+            cardType = html`
+                <style>
+                    .special-view {
+                        border-radius: 8px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        background-color: #fff;
+                        padding: 30px 20px;
+                        margin: 10px 0;
+                        transition: box-shadow 0.3s ease;
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                    }
+                </style>
+                <div class="special-view">
+                    <or-attribute-input-new disablesubscribe
+                            .assetType="${this.asset?.type}"
+                            .attribute="${this.asset?.attributes?.rainTomorrow}"
+                            .assetId="${this.asset?.id!}"
+                            .label="${this.asset?.name}"
+                            .readonly="${this.asset?.accessPublicRead === false}"
+                            resizeVertical
+                            .disableButton="${true}"
+                            .fullWidth="${(this.asset?.attributes?.rainTomorrow.name === 'rainTomorrow')}">
+                    </or-attribute-input-new>
+                </div>`;
+        }
+
         return html`
             <div id="card-container" style="${styleStr}">
                 <div id="header">
@@ -181,6 +212,7 @@ export class OrMapAssetCard extends subscribe(manager)(LitElement) {
                     </div>
                 `}
             </div>
+            ${cardType}
         `;
     }
 

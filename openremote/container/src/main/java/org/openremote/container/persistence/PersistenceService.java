@@ -557,7 +557,7 @@ public class PersistenceService implements ContainerService, Consumer<Persistenc
         // Clean the database each run
         if (forceClean) {
             LOG.warning("!!! Cleaning database !!!");
-            flyway.clean();
+            // flyway.clean();
         } else {
             LOG.fine("Not cleaning, using existing database");
         }

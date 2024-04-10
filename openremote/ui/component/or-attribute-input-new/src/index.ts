@@ -390,8 +390,8 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
     @property({type: Boolean, attribute: true})
     public required?: boolean;
 
-    @property()
-    public value?: never;
+    @property({type: Number})
+    public value?: number;
 
     @property()
     public inputType?: InputType;

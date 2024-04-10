@@ -34,8 +34,8 @@ public class CustomManagerSetup extends ManagerSetup {
     public void onStart() throws Exception {
         super.onStart();
 
-        WeatherAsset weatherAsset = new WeatherAsset("Demo Asset").setRealm(Constants.MASTER_REALM);
-        weatherAsset.setId("5MoPLE7aYDonAMZ4baJgrK");
-        assetStorageService.merge(weatherAsset);
+//        WeatherAsset weatherAsset = new WeatherAsset("Demo Asset").setRealm(Constants.MASTER_REALM);
+//        weatherAsset.setId("5MoPLE7aYDonAMZ4baJgrK");
+//        assetStorageService.merge(weatherAsset);
     }
 }
