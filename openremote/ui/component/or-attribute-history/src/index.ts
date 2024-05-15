@@ -12,7 +12,14 @@ import {
 import {customElement, property, query} from "lit/decorators.js";
 import i18next from "i18next";
 import {translate} from "@openremote/or-translate";
-import {AssetModelUtil, Attribute, AttributeRef, DatapointInterval, ValueDatapoint, ValueDescriptor} from "@openremote/model";
+import {
+    AssetModelUtil,
+    Attribute,
+    AttributeRef,
+    DatapointInterval,
+    ValueDatapoint,
+    ValueDescriptor
+} from "@openremote/model";
 import manager, {DefaultColor2, DefaultColor3, DefaultColor4, DefaultColor5} from "@openremote/core";
 import "@openremote/or-mwc-components/or-mwc-input";
 import "@openremote/or-components/or-panel";
@@ -78,12 +85,12 @@ export interface TableConfig {
     default?: AssetTableConfig;
     assetTypes?: {
         [assetType: string]: {
-            attributeNames?: {[attributeName: string]: AssetTableConfig};
-            attributeValueTypes?: {[attributeValueType: string]: AssetTableConfig};
+            attributeNames?: { [attributeName: string]: AssetTableConfig };
+            attributeValueTypes?: { [attributeValueType: string]: AssetTableConfig };
         };
     };
-    attributeNames?: {[attributeName: string]: AssetTableConfig};
-    attributeValueTypes?: {[attributeValueType: string]: AssetTableConfig};
+    attributeNames?: { [attributeName: string]: AssetTableConfig };
+    attributeValueTypes?: { [attributeValueType: string]: AssetTableConfig };
 }
 
 export interface ChartConfig {
@@ -106,25 +113,25 @@ const style = css`
         --internal-or-attribute-history-text-color: var(--or-attribute-history-text-color, var(--or-app-color3, ${unsafeCSS(DefaultColor3)}));
         --internal-or-attribute-history-controls-margin: var(--or-attribute-history-controls-margin, 10px 0);
         --internal-or-attribute-history-controls-justify-content: var(--or-attribute-history-controls-justify-content, flex-end);
-        --internal-or-attribute-history-graph-fill-color: var(--or-attribute-history-graph-fill-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));       
-        --internal-or-attribute-history-graph-fill-opacity: var(--or-attribute-history-graph-fill-opacity, 1);       
-        --internal-or-attribute-history-graph-line-color: var(--or-attribute-history-graph-line-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));       
+        --internal-or-attribute-history-graph-fill-color: var(--or-attribute-history-graph-fill-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
+        --internal-or-attribute-history-graph-fill-opacity: var(--or-attribute-history-graph-fill-opacity, 1);
+        --internal-or-attribute-history-graph-line-color: var(--or-attribute-history-graph-line-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
         --internal-or-attribute-history-graph-point-color: var(--or-attribute-history-graph-point-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
         --internal-or-attribute-history-graph-point-border-color: var(--or-attribute-history-graph-point-border-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
         --internal-or-attribute-history-graph-point-radius: var(--or-attribute-history-graph-point-radius, 2);
-        --internal-or-attribute-history-graph-point-hit-radius: var(--or-attribute-history-graph-point-hit-radius, 20);       
+        --internal-or-attribute-history-graph-point-hit-radius: var(--or-attribute-history-graph-point-hit-radius, 20);
         --internal-or-attribute-history-graph-point-border-width: var(--or-attribute-history-graph-point-border-width, 2);
         --internal-or-attribute-history-graph-point-hover-color: var(--or-attribute-history-graph-point-hover-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
         --internal-or-attribute-history-graph-point-hover-border-color: var(--or-attribute-history-graph-point-hover-border-color, var(--or-app-color4, ${unsafeCSS(DefaultColor4)}));
-        --internal-or-attribute-history-graph-point-hover-radius: var(--or-attribute-history-graph-point-hover-radius, 4);      
+        --internal-or-attribute-history-graph-point-hover-radius: var(--or-attribute-history-graph-point-hover-radius, 4);
         --internal-or-attribute-history-graph-point-hover-border-width: var(--or-attribute-history-graph-point-hover-border-width, 2);
-        display: block;                
+        display: block;
     }
-    
+
     :host([hidden]) {
         display: none;
     }
-    
+
     #container {
         display: flex;
         min-width: 0;
@@ -132,7 +139,7 @@ const style = css`
         height: 100%;
         flex-direction: column;
     }
-       
+
     .button-icon {
         align-self: center;
         padding: 10px;
@@ -147,19 +154,19 @@ const style = css`
         align-items: center;
         text-align: center;
     }
-    
+
     #msg:not([hidden]) {
-        display: flex;    
+        display: flex;
     }
-    
+
     #controls {
         display: flex;
         flex-wrap: wrap;
         justify-content: var(--internal-or-attribute-history-controls-justify-content);
-        margin: var(--internal-or-attribute-history-controls-margin);        
+        margin: var(--internal-or-attribute-history-controls-margin);
         flex-direction: row;
     }
-    
+
     #time-picker {
         width: 150px;
         padding: 0 5px;
@@ -171,35 +178,35 @@ const style = css`
         flex-wrap: wrap;
         align-items: center;
     }
-    
+
     #ending-controls > * {
         padding: 0 3px;
     }
-    
+
     #ending-date {
         width: 200px;
         padding-left: 5px;
     }
-    
+
     #chart-container {
         position: relative;
         min-height: 250px;
     }
-        
+
     #table-container {
         height: 100%;
     }
-    
+
     #table {
         width: 100%;
         margin-bottom: 10px;
     }
-    
+
     #table > table {
         width: 100%;
         table-layout: fixed;
     }
-    
+
     #table th, #table td {
         overflow: hidden;
         white-space: nowrap;
@@ -301,35 +308,43 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
     }
 
     render() {
-
+        console.log("Loading data");
         const isChart = this._type && (this._type.jsonType === "number" || this._type.jsonType === "boolean");
         const disabled = this._loading || !this._type;
 
         return html`
             <div id="container">
                 <div id="controls">
-                    <or-mwc-input id="time-picker" .type="${InputType.SELECT}" ?disabled="${disabled}" .label="${i18next.t("timeframe")}" @or-mwc-input-changed="${(evt: OrInputChangedEvent) => this.period = evt.detail.value}" .value="${this.period}" .options="${this._getPeriodOptions()}"></or-mwc-input>
+                    <or-mwc-input id="time-picker" .type="${InputType.SELECT}" ?disabled="${disabled}"
+                                  .label="${i18next.t("timeframe")}"
+                                  @or-mwc-input-changed="${(evt: OrInputChangedEvent) => this.period = evt.detail.value}"
+                                  .value="${this.period}" .options="${this._getPeriodOptions()}"></or-mwc-input>
                     <div id="ending-controls">
-                        <or-mwc-input id="ending-date" .type="${InputType.DATETIME}" ?disabled="${disabled}" label="${i18next.t("ending")}" .value="${this.toTimestamp}" @or-mwc-input-changed="${(evt: OrInputChangedEvent) =>  this._updateTimestamp(moment(evt.detail.value as string).toDate())}"></or-mwc-input>
-                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-left" @click="${() => this._updateTimestamp(this.toTimestamp!, false, 0)}"></or-icon>
-                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-right" @click="${() => this._updateTimestamp(this.toTimestamp!, true, 0)}"></or-icon>
-                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-double-right" @click="${() => this._updateTimestamp(new Date())}"></or-icon>
+                        <or-mwc-input id="ending-date" .type="${InputType.DATETIME}" ?disabled="${disabled}"
+                                      label="${i18next.t("ending")}" .value="${this.toTimestamp}"
+                                      @or-mwc-input-changed="${(evt: OrInputChangedEvent) => this._updateTimestamp(moment(evt.detail.value as string).toDate())}"></or-mwc-input>
+                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-left"
+                                 @click="${() => this._updateTimestamp(this.toTimestamp!, false, 0)}"></or-icon>
+                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-right"
+                                 @click="${() => this._updateTimestamp(this.toTimestamp!, true, 0)}"></or-icon>
+                        <or-icon class="button button-icon" ?disabled="${disabled}" icon="chevron-double-right"
+                                 @click="${() => this._updateTimestamp(new Date())}"></or-icon>
                     </div>
                 </div>
-                
+
                 ${!this._type ? html`
                     <div id="msg">
                         <or-translate value="invalidAttribute"></or-translate>
                     </div>
                 ` : isChart ? html`
-                        <div id="chart-container">
-                            <canvas id="chart"></canvas>
-                        </div>
-                    ` : html`
-                        <div id="table-container">
-                            ${this._tableTemplate || ``}
-                        </div>
-                    `}                
+                    <div id="chart-container">
+                        <canvas id="chart"></canvas>
+                    </div>
+                ` : html`
+                    <div id="table-container">
+                        ${this._tableTemplate || ``}
+                    </div>
+                `}
             </div>
         `;
     }
@@ -338,7 +353,6 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
     // Used instead of updated() to prevent a second render when properties get changed.
     willUpdate(changedProperties: PropertyValues) {
         super.willUpdate(changedProperties);
-
         if (!this._type || !this._data) {
             return;
         }
@@ -383,7 +397,7 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        onResize:() => this.dispatchEvent(new OrAttributeHistoryEvent('resize')),
+                        onResize: () => this.dispatchEvent(new OrAttributeHistoryEvent('resize')),
                         plugins: {
                             legend: {
                                 display: false
@@ -517,13 +531,13 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
 
             const dp = this._data!.find((dp) => dp.y !== undefined);
             if (dp) {
-                if (typeof(dp.y) === "object" && !Array.isArray(dp.y)) {
+                if (typeof (dp.y) === "object" && !Array.isArray(dp.y)) {
                     config.columns = Object.entries(dp.y as {}).map(([prop, value]) => {
                         return {
                             type: "prop",
                             header: prop,
                             path: "$.['" + prop + "']",
-                            stringify: typeof(value) === "object",
+                            stringify: typeof (value) === "object",
                             numeric: !isNaN(Number(value))
                         } as TableColumnConfig;
                     });
@@ -531,8 +545,8 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
                     config.columns.push({
                         type: "prop",
                         header: "value",
-                        stringify: typeof(dp.y) === "object",
-                        numeric: typeof(dp.y) === "number"
+                        stringify: typeof (dp.y) === "object",
+                        numeric: typeof (dp.y) === "number"
                     });
                 }
             }
@@ -547,27 +561,37 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
 
         if (config.columns && config.columns.length > 0) {
             return html`
-            <div id="table" class="mdc-data-table">
-                <table style="${config.styles ? styleMap(config.styles) : ""}" class="mdc-data-table__table" aria-label="${attributeName + " history"}">
-                    <thead>
+                <div id="table" class="mdc-data-table">
+                    <table style="${config.styles ? styleMap(config.styles) : ""}" class="mdc-data-table__table"
+                           aria-label="${attributeName + " history"}">
+                        <thead>
                         <tr class="mdc-data-table__header-row">
-                            ${config.columns.map((c) => html`<th style="${c.headerStyles ? styleMap(c.headerStyles) : ""}" class="mdc-data-table__header-cell ${c.numeric ? "mdc-data-table__header-cell--numeric" : ""}" role="columnheader" scope="col"><or-translate value="${c.header}"></or-translate></th>`)}
+                            ${config.columns.map((c) => html`
+                                <th style="${c.headerStyles ? styleMap(c.headerStyles) : ""}"
+                                    class="mdc-data-table__header-cell ${c.numeric ? "mdc-data-table__header-cell--numeric" : ""}"
+                                    role="columnheader" scope="col">
+                                    <or-translate value="${c.header}"></or-translate>
+                                </th>`)}
                         </tr>
-                    </thead>
-                    <tbody class="mdc-data-table__content">
+                        </thead>
+                        <tbody class="mdc-data-table__content">
                         ${this._data!.map((dp) => {
                             return html`
                                 <tr class="mdc-data-table__row">
                                     ${config.columns!.map((c) => {
                                         const value = this._getCellValue(dp, c, config.timestampFormat);
-                                        return html`<td style="${c.styles ? styleMap(c.styles) : ""}" class="mdc-data-table__cell ${c.numeric ? "mdc-data-table__cell--numeric" : ""}" title="${value}">${value}</td>`;
-                                })}
+                                        return html`
+                                            <td style="${c.styles ? styleMap(c.styles) : ""}"
+                                                class="mdc-data-table__cell ${c.numeric ? "mdc-data-table__cell--numeric" : ""}"
+                                                title="${value}">${value}
+                                            </td>`;
+                                    })}
                                 </tr>
-                            `;            
+                            `;
                         })}
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
             `;
         }
 
@@ -628,6 +652,7 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
             return [interval, i18next.t(interval.toLowerCase())];
         });
     }
+
     protected _getPeriodOptions() {
         return [
             DatapointInterval.HOUR.toLowerCase(),
@@ -704,12 +729,12 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
         const lowerCaseInterval = interval.toLowerCase();
         this._startOfPeriod = moment(this.toTimestamp).subtract(1, this.period).startOf(lowerCaseInterval as moment.unitOfTime.StartOf).add(1, lowerCaseInterval as moment.unitOfTime.Base).toDate().getTime();
         this._endOfPeriod = moment(this.toTimestamp).startOf(lowerCaseInterval as moment.unitOfTime.StartOf).add(1, lowerCaseInterval as moment.unitOfTime.Base).toDate().getTime();
-        this._timeUnits =  lowerCaseInterval as TimeUnit;
+        this._timeUnits = lowerCaseInterval as TimeUnit;
         this._stepSize = stepSize;
 
         const isChart = this._type && (this._type.jsonType === "number" || this._type.jsonType === "boolean");
         let response;
-        if(isChart) {
+        if (isChart) {
             response = await manager.rest.api.AssetDatapointResource.getDatapoints(
                 assetId,
                 attributeName,
@@ -739,21 +764,22 @@ export class OrAttributeHistory extends translate(i18next)(LitElement) {
             this._dataFirstLoaded = true;
         }
     }
-    protected _updateTimestamp(timestamp: Date, forward?: boolean, timeout= 300) {
+
+    protected _updateTimestamp(timestamp: Date, forward?: boolean, timeout = 300) {
 
         if (this._updateTimestampTimer) {
             window.clearTimeout(this._updateTimestampTimer);
             this._updateTimestampTimer = undefined;
         }
         this._updateTimestampTimer = window.setTimeout(() => {
-                const newMoment = moment(timestamp);
+            const newMoment = moment(timestamp);
 
-                if (forward !== undefined) {
-                    newMoment.add(forward ? 1 : -1, this.period);
-                }
-                this.toTimestamp = newMoment.toDate()
+            if (forward !== undefined) {
+                newMoment.add(forward ? 1 : -1, this.period);
+            }
+            this.toTimestamp = newMoment.toDate()
         }, timeout);
     }
-    
-    
+
+
 }

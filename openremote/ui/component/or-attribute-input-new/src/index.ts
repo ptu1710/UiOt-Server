@@ -645,9 +645,9 @@ export class OrAttributeInput extends subscribe(manager)(translate(i18next)(LitE
         // const buttonIcon = !this.showButton ? (this.disableButton ? undefined : "") : this._writeTimeoutHandler ? "send-clock" : "send";
 
         if (this._templateProvider && this._templateProvider.templateFunction) {
-            let result = "NO";
+            let result = html`<or-icon icon="weather-partly-cloudy"></or-icon>`;
             if (value > 50) {
-                result = "YES";
+                result = html`<or-icon icon="weather-rainy"></or-icon>`;
             }
             content = html`
                 <div id="wrapper-value">

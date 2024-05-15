@@ -381,7 +381,6 @@ function getPanelContent(id: string, assetInfo: AssetInfo, hostElement: LitEleme
                     return getField(item.item, item.itemConfig, getPropertyTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig));
                 } else {
                     if (item.item.name === "rainTomorrow") {
-                        console.log(item.item.name)
                         return getCardLayout(item.item.name, item.itemConfig, getSpecAttributeTemplate(asset, item.item, hostElement, viewerConfig, panelConfig, item.itemConfig));
                     }
                     
@@ -947,8 +946,6 @@ export function getCardLayout(name: string, itemConfig?: InfoPanelItemConfig, co
     if (!content) {
         return html``;
     }
-
-    console.log(name, itemConfig, content);
 
     return html`
         <div id="card-${name}" style="${itemConfig && itemConfig.styles ? styleMap(itemConfig.styles) : ""}"
