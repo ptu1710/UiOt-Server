@@ -2,12 +2,12 @@
 import {html, LitElement, PropertyValues, TemplateResult, unsafeCSS} from "lit";
 import {customElement, property, query, state} from "lit/decorators.js";
 import "@openremote/or-icon";
-import {InputType, OrInputChangedEvent, OrMwcInput} from "@openremote/or-mwc-components/or-mwc-input";
+import "@openremote/or-mwc-components/or-mwc-input";
 import "@openremote/or-attribute-input";
 import "@openremote/or-attribute-input-new";
-import {HistoryConfig, OrAttributeHistory} from "@openremote/or-attribute-history";
-import {OrChartConfig} from "@openremote/or-chart";
-import {OrMwcTable, OrMwcTableRowClickEvent} from "@openremote/or-mwc-components/or-mwc-table";
+import "@openremote/or-attribute-history";
+import "@openremote/or-chart";
+import "@openremote/or-mwc-components/or-mwc-table";
 import "@openremote/or-components/or-panel";
 import {
     DialogAction,
@@ -18,7 +18,11 @@ import {
 } from "@openremote/or-mwc-components/or-mwc-dialog";
 import "@openremote/or-mwc-components/or-mwc-list";
 import {translate} from "@openremote/or-translate";
-import manager, {DefaultColor5, subscribe, Util} from "@openremote/core";
+import {InputType, OrInputChangedEvent, OrMwcInput} from "@openremote/or-mwc-components/or-mwc-input";
+import manager, {subscribe, Util, DefaultColor5} from "@openremote/core";
+import {OrMwcTable, OrMwcTableRowClickEvent} from "@openremote/or-mwc-components/or-mwc-table";
+import {OrChartConfig} from "@openremote/or-chart";
+import {HistoryConfig, OrAttributeHistory} from "@openremote/or-attribute-history";
 import {
     AgentDescriptor,
     Asset,
