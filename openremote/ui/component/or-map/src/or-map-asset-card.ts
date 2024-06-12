@@ -155,7 +155,7 @@ export class OrMapAssetCard extends subscribe(manager)(LitElement) {
 
         const highlightedAttr = getMarkerConfigAttributeName(this.markerconfig, this.asset.type);
 
-        console.log("highlightedAttr: ", this.asset?.attributes?.rainTomorrow.value);
+        console.log("highlightedAttr: ", this.asset?.attributes?.rainTomorrow?.value);
 
         let cardType = html``;
         if (this.asset.type === "WeatherAsset") {
