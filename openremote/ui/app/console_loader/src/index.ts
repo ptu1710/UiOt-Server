@@ -84,7 +84,7 @@ const appConfig: AppConfig<RootState> = {
     ],
     realms: {
         default: {
-            appTitle: "OpenRemote Demo",
+            appTitle: "UiOt",
             logo: require("../images/logo.png"),
             logoMobile: require("../images/logo-mobile.png")
         }
