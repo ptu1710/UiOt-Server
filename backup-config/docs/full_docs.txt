@@ -1,0 +1,99 @@
+java -version
+git --version
+node -v
+yarn -v
+
+git clone https://github.com/openremote/custom-project.git
+git submodule init
+git submodule update --rebase --remote --progress
+
+# Config IntelliJ:
+Settings -> Build,Execution,Deployment -> Build Tools -> Gradle. Choose 'Build and run using' and 'Run tests using' with 'IntelliJ IDEA'.
+
+# Clean & build Manager
+./gradlew clean installDist
+
+# Add as Env var to access Swagger:
+OR_APP_DOCROOT=manager/build/install/manager/web;
+
+docker-compose -f profile/dev-testing.yml up --build
+
+npm run serve
+
+git clone https://github.com/keycloak/keycloak.git
+
+# Clean & build Keycloak
+./mvnw -pl quarkus/deployment,quarkus/dist -am -DskipTests clean install
+
+git clone https://github.com/openremote/keycloak.git
+
+# Build image for DOCKER_DEFAULT_PLATFORM platform (linux/amd64 or linux/arm64)
+DOCKER_DEFAULT_PLATFORM="linux/amd64" docker build . -t ixxc/image-tag:version
+
+# Build Manager image (linux/amd64)
+DOCKER_DEFAULT_PLATFORM="linux/amd64" docker build -t ixxc/manager-amd64:1.4 ./manager/build/install/manager
+
+# ---------- Start install on VPS ---------- #
+*** NOTES ***
+1. Copy deployment folder
+2. Set fcm file (for mobile notification, if needed): OR_FIREBASE_CONFIG_FILE: ${OR_FIREBASE_CONFIG_FILE:-/deployment/manager/fcm.json}
+3. Turn on user registration
+4. Change Access Token Lifespan upto 1 days
+
+*** INSTALL DOCKER & DOCKER COMPOSE ***
+sudo apt update
+sudo apt upgrade
+
+sudo apt-get install ca-certificates curl
+
+# Add Docker's official GPG key:
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+sudo apt install docker-compose
+
+reboot
+
+*** TEST DOMAIN ***
+sudo docker run --name mynginx -p 80:80 -d nginx
+sudo docker container ls -a
+sudo docker stop mynginx
+
+*** CLEAN DOCKER ***
+sudo docker system df
+sudo docker system prune -a
+sudo docker image ls -a
+sudo docker container ls -a
+sudo docker volume ls
+sudo docker volume rm 
+
+*** SET VARIABLES ***
+OR_HOSTNAME="ixxc.id.vn"
+
+*** INSTALL CERTS ***
+sudo snap install core; 
+sudo snap refresh core
+sudo apt remove certbot
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+sudo ufw allow 443
+sudo certbot certonly --standalone -d $OR_HOSTNAME
+sudo ls /etc/letsencrypt/live/$OR_HOSTNAME
+sudo mkdir -p /etc/haproxy/certs
+DOMAIN=$OR_HOSTNAME sudo -E bash -c 'cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/letsencrypt/live/$DOMAIN/privkey.pem > /etc/haproxy/certs/$DOMAIN.pem'
+sudo chmod -R go-rwx /etc/haproxy/certs
+
+*** RUN CONTAINERS ***
+OR_HOSTNAME=$OR_HOSTNAME docker-compose -p idm up
+
